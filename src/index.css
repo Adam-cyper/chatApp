@@ -1,0 +1,35 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.message--box{
+display: flex;
+align-items: center;
+width: fit-content;
+max-width: 45%;
+}
+
+
+.my--container{
+    height: 70vh;
+    overflow: hidden;
+    overflow-y: scroll;
+}
+.users--container{
+height: 65vh;
+overflow: hidden;
+overflow-y: scroll;
+}
+
+.myself--message{
+    display: flex;
+    align-items: flex-end;
+    align-self: flex-end;
+    justify-content: right;
+}
+@media only screen and (max-width:678px){
+    .message--box{
+        width: fit-content;
+        max-width: 80%;
+    }
+}

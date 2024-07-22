@@ -1,0 +1,86 @@
+* {
+  padding: 0;
+  margin: 0;
+  box-sizing: border-box;
+}
+.container {
+  display: flex;
+  flex-direction: row-reverse;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 89vh;
+  padding: 0 3rem;
+}
+.container img {
+  max-width: 50%;
+}
+.detail h1 {
+  font-size: 40px;
+  font-weight: 700;
+}
+.btn {
+  padding: 0.6rem 1.5rem;
+  background-color: rgb(50, 180, 255);
+  border: none;
+  border-radius: 10px;
+
+  color: white;
+  font-size: 20px;
+  box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.322);
+}
+.buttons-container {
+  margin: 1rem 0rem;
+}
+.wrap {
+  background: linear-gradient(#94ddfa, #9198e500);
+}
+.btn2 {
+  margin-left: 2rem;
+}
+.btn3 {
+  background-color: green;
+}
+.banner {
+  background-image: linear-gradient(
+      to top,
+      rgba(37, 37, 37, 0.596),
+      rgba(3, 121, 19, 0.603)
+    ),
+    url("../../../public/images/wallpaperflare.com_wallpaper\ \(6\).jpg");
+  height: 50vh;
+  background-position: center;
+  text-align: center;
+  padding-top: 4rem;
+  color: white;
+}
+.banner h1 {
+  font-size: 2rem;
+  font-weight: 700;
+}
+.container1 img {
+  max-width: 35%;
+}
+
+@media only screen and (max-width: 768px) {
+  .container {
+    display: flex;
+    flex-direction: column-reverse;
+  }
+  .container img {
+    max-width: 100%;
+    padding-top: 2rem;
+  }
+}
+
+@media only screen and (max-width: 430px) {
+  .buttons-container {
+    display: flex;
+  }
+  .btn{
+    padding: .3rem .6rem;
+  }
+  .container{
+    padding: 0 2rem;
+  }
+}
