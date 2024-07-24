@@ -17,8 +17,8 @@ function App() {
   return (
     <div className="App">
       <Routes>
-        <Route path="/" element={<Homapage socket={socket}/>} />
-        <Route path="/chat/:user/:id" element={<ChatPage socket={socket}/>} />
+        <Route path="/" element={<Homapage />} />
+        <Route path="/chat" element={<ChatPage socket={socket}/>} />
         <Route path="/InstantChat" element={<InstantCaht/>}/>
         <Route path="/Blog" element={<Blog />} />
       </Routes>

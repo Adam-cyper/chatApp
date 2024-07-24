@@ -1,13 +1,10 @@
-import React, { useState } from "react";
+import React from "react";
 import Navbar from "../Navpage/Navbar";
 import "./Homepage.css";
-import Modal from "../Modal";
-// import io from "socket.io-client";
+import { Link } from "react-router-dom";
 
-// const socket = io.connect("http://localhost:5000");
 
-function Homapage({socket}) {
-  const [isModalOpen, setIsModalOpen] = useState(false);
+function Homapage() {
 
   return (
     <>
@@ -26,10 +23,9 @@ function Homapage({socket}) {
               <button type="text" className="btn">
                 Create chat
               </button>
-              <button type="text" className="btn btn2" onClick={() => setIsModalOpen(true)}>
-                Join Chat
+              <button type="text" className="btn btn2">
+               <Link to={"/chat"}>Join Chat</Link> 
               </button>
-              <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} socket={socket} />
             </div>
           </div>
         </div>

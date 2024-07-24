@@ -1,23 +1,42 @@
 import React, { useEffect, useState, useRef } from "react";
 import { BsSend } from "react-icons/bs";
-import {  useParams } from "react-router-dom";
 
 function ChatPage({ socket }) {
-  const { user, id } = useParams();
 
   const [input, setInput] = useState("");
   const [messages, setMessages] = useState([]);
   const [searchInput, setSearchInput] = useState("");
   const [filteredUsers, setFilteredUsers] = useState([]);
+  const [showChat, setShowChat]= useState(false)
+  const [username, setUsername]= useState("")
+  const [groupId, setGroupId]= useState("")
+  const [allUsers,setAllUsers]= useState([])
 
   const messageRef = useRef(null);
 
+  const handleSubmit = (e) => {
+    e.preventDefault();
+        if(username !== "" && groupId!==""){
+            socket.emit("join_room",{username,groupId})
+            setShowChat(true)
+        }
+  };
+
   useEffect(() => {
     socket.on("receive_message", (data) => {
-      setMessages(prev=>[...prev,data])
+      setMessages((prev)=>[...prev,data])
     });
   }, [socket]);
 
+  useEffect(() => {
+    socket.on('updateUsers', (users) => {
+        setAllUsers(users);
+    });
+
+    return () => {
+        socket.off('updateUsers');
+    };
+}, [socket]);
 
   const scrollToBottom = () => {
     messageRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -30,8 +49,8 @@ function ChatPage({ socket }) {
     e.preventDefault();
     if (input.trim() !== "") {
       const messageData = {
-        room: id,
-        author: user,
+        room: groupId,
+        author: username,
         message: input,
         time:
           new Date(Date.now()).getHours() +
@@ -45,6 +64,45 @@ function ChatPage({ socket }) {
     } 
   };
 
+if(!showChat){
+  return (
+    <div className="p-5 border-2 border-slate-300 w-2/6 mt-32 mx-auto">
+      <h4 className="font-bold text-xl mb-5">Join Group Chat</h4>
+              <form onSubmit={handleSubmit}>
+          <div className="mb-4">
+            <label htmlFor="username" className="block text-sm font-medium text-gray-700">Username</label>
+            <input
+              type="text"
+              id="username"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              className="mt-1 p-2 block w-full border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+              required
+            />
+          </div>
+          <div className="mb-4">
+            <label htmlFor="groupId" className="block text-sm font-medium text-gray-700">Group ID</label>
+            <input
+              type="text"
+              id="groupId"
+              value={groupId}
+              onChange={(e) => setGroupId(e.target.value)}
+              className="mt-1 p-2 block w-full border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+              required
+            />
+          </div>
+          <div className="flex justify-end">
+            <button
+              type="submit"
+              className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+            >
+              Join
+            </button>
+          </div>
+        </form>
+    </div>
+  )
+}
 
   return (
     <div className="flex h-screen">
@@ -55,9 +113,10 @@ function ChatPage({ socket }) {
           onSubmit={(e) => {
             e.preventDefault();
           }}
-        >
+          >
+          <h3 className="font-bold text-xl mb-3">Group Members</h3>
           <input
-            className="py-2 px-5 w-full my-2 rounded-md"
+            className="py-3 px-5 w-full my-2 rounded-md"
             type="search"
             name="search"
             id="search"
@@ -69,22 +128,21 @@ function ChatPage({ socket }) {
           />
         </form>
         <div className="users--container">
-          {filteredUsers.length > 0 ? (
-            filteredUsers.map((user) => (
+          {allUsers.length > 0 ? (
+            allUsers.map((user,index) => (
               <div
-                key={user._id}
+                key={index}
                 className="bg-slate-300 mx-5 my-4 p-3 rounded-md flex gap-3 items-center cursor-pointer hover:bg-slate-400 transition-all duration-300"
               >
                 <img
                   className="rounded-full"
-                  style={{ height: "60px" }}
-                  width={60}
-                  src={`${user.photo}`}
-                  alt={`${user.username}`}
+                  style={{ height: "55px" }}
+                  width={55}
+                  src={"/images/wallpaperflare.com_wallpaper (6).jpg"}
+                  alt={`${user}`}
                 />
                 <div>
                   <h4 className="font-bold capitalize">{user}</h4>
-                  <p>Open your message</p>
                 </div>
               </div>
             ))
@@ -108,25 +166,26 @@ function ChatPage({ socket }) {
             src="/images/wallpaperflare.com_wallpaper (6).jpg"
             alt="user"
           />
-          <h4 className="font-bold text-xl capitalize">{user}</h4>
+          <h4 className="font-bold text-xl capitalize">{username}</h4>
         </div>
         <div className="flex flex-grow flex-col h-0">
           {
             <div className="my--container">
               {messages.length > 0 ? (
                 messages.map((message, index) =>
-                  message?.author===user ? (
+                  message?.author===username ? (
                     <div key={index} className="main myself--message">
                       <div className="message--box  rounded-lg text-white bg-blue-400 mx-2 px-4 py-5 my-3 ">
                         <div>
                           <p>{message.message}</p>
                           <small className="float-right mt-2 font-bold">
-                            {message.time}
+                            {message.time} you
                           </small>
                         </div>
                       </div>
                     </div>
-                  ) : (
+                  ) 
+                  : (
                     <div
                       key={index}
                       className="message--box rounded-lg bg-blue-100 mx-2 px-4 py-5 my-5"
@@ -134,7 +193,7 @@ function ChatPage({ socket }) {
                       <div>
                         <p>{message.message}</p>
                         <small className="float-right mt-2 font-bold">
-                          {message.time}
+                          {message.time} {message.author}
                         </small>
                       </div>
                     </div>
