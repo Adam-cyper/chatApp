@@ -32,7 +32,8 @@
 .buttons-container {
   margin: 1rem 0rem;
 }
-.wrap {
+.wrap,
+.chat--details {
   background: linear-gradient(#94ddfa, #9198e500);
 }
 .btn2 {

@@ -25,17 +25,24 @@ function ChatPage({ socket }) {
   useEffect(() => {
     socket.on("receive_message", (data) => {
       setMessages((prev)=>[...prev,data])
+      // console.log(data)
     });
+    return () => {
+      socket.off('receive_message');
+  };
   }, [socket]);
 
-  useEffect(() => {
+  const updateAllUsers=()=>{
     socket.on('updateUsers', (users) => {
-        setAllUsers(users);
-    });
+      setAllUsers(users);
+  });
 
-    return () => {
-        socket.off('updateUsers');
-    };
+  return () => {
+      socket.off('updateUsers');
+  };
+  }
+  useEffect(() => {
+ updateAllUsers()
 }, [socket]);
 
   const scrollToBottom = () => {
@@ -64,10 +71,18 @@ function ChatPage({ socket }) {
     } 
   };
 
+  const leaveGroup=async()=>{
+    await socket.emit("leave_group",{groupId, username})
+    setShowChat(false)
+    setUsername("")
+    setGroupId("")
+  }
+
 if(!showChat){
   return (
-    <div className="p-5 border-2 border-slate-300 w-2/6 mt-32 mx-auto">
-      <h4 className="font-bold text-xl mb-5">Join Group Chat</h4>
+    <section className="chat--details pt-32 h-screen">
+    <div className=" p-5 border-2 border-slate-300 w-2/6  mx-auto rounded-md">
+      <h4 className="font-bold text-xl mb-5">Join Meeting</h4>
               <form onSubmit={handleSubmit}>
           <div className="mb-4">
             <label htmlFor="username" className="block text-sm font-medium text-gray-700">Username</label>
@@ -101,6 +116,7 @@ if(!showChat){
           </div>
         </form>
     </div>
+    </section>
   )
 }
 
@@ -152,6 +168,9 @@ if(!showChat){
             </p>
           )}
         </div>
+        <button className="ml-5 bg-blue-300 rounded-md" onClick={leaveGroup}>
+          <p className="py-3 px-5 font-semibold">Leave Group</p>
+        </button>
       </div>
       <div className="flex flex-col bg-blue-300 w-full p-2">
         <div className="current--user bg-slate-200 px-2 py-2 rounded-md mb-9 ml-2 mt-5 mr-2 flex items-center gap-5">
@@ -179,7 +198,7 @@ if(!showChat){
                         <div>
                           <p>{message.message}</p>
                           <small className="float-right mt-2 font-bold">
-                            {message.time} you
+                            {message.time} You
                           </small>
                         </div>
                       </div>
@@ -192,7 +211,7 @@ if(!showChat){
                     >
                       <div>
                         <p>{message.message}</p>
-                        <small className="float-right mt-2 font-bold">
+                        <small className="float-right mt-2 font-bold capitalize">
                           {message.time} {message.author}
                         </small>
                       </div>
