@@ -6,6 +6,8 @@ import Blog from "./components/landing/Blog";
 import io from "socket.io-client";
 import InstantChat from "./components/landing/InstantChat";
 import HomePage from "./components/landing/HomePage";
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const socket = io.connect("http://localhost:5000");
 
@@ -16,6 +18,7 @@ function App() {
 
   return (
     <div className="App">
+      <ToastContainer position="top-center" theme="colored" hideProgressBar autoClose={3500} />
       <Routes>
         <Route path="/" element={<HomePage />} />
         <Route path="/chat" element={<ChatPage socket={socket}/>} />

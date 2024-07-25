@@ -1,29 +1,35 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import axios from 'axios'
+import { toast } from 'react-toastify';
 
 const Modal = ({ isOpen, onClose,socket }) => {
-    const navigate = useNavigate();
 
-  const [username, setUsername] = useState('');
   const [groupId, setGroupId] = useState('');
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-        if(username !== "" && groupId!==""){
-            socket.emit("join_room",groupId)
+  const createRoom = async (e) => {
+    e.preventDefault()
+    if(!groupId){
+      return alert('please enter a group id')
+    }
+        try {
+            const response = await axios.post('http://localhost:5000/create-room', { groupId });
+            toast.success(`Group created with ID: ${response.data.groupId}`)
+        } catch (error) {
+          toast.error(error.response.data.error)
+        }finally{
+          onClose()
+          setGroupId("")
         }
-    onClose();
-    navigate(`/chat/${username}/${groupId}`,{replace:true})
-  };
+};
 
   if (!isOpen) return null;
 
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
       <div className="bg-white rounded-lg p-6 w-96">
-        <h2 className="text-2xl font-semibold text-blue-600 mb-4">User Information</h2>
-        <form onSubmit={handleSubmit}>
-          <div className="mb-4">
+        <h2 className="text-2xl font-semibold text-blue-600 mb-4">New Meeting</h2>
+        <form onSubmit={createRoom}>
+          {/* <div className="mb-4">
             <label htmlFor="username" className="block text-sm font-medium text-gray-700">Username</label>
             <input
               type="text"
@@ -33,7 +39,7 @@ const Modal = ({ isOpen, onClose,socket }) => {
               className="mt-1 p-2 block w-full border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500"
               required
             />
-          </div>
+          </div> */}
           <div className="mb-4">
             <label htmlFor="groupId" className="block text-sm font-medium text-gray-700">Group ID</label>
             <input
@@ -57,7 +63,7 @@ const Modal = ({ isOpen, onClose,socket }) => {
               type="submit"
               className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
             >
-              Join Chat
+              Create Group
             </button>
           </div>
         </form>

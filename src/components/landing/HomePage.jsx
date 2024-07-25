@@ -1,10 +1,13 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import Navbar from '../Navpage/Navbar'
 import { Link } from 'react-router-dom';
 import AOS from 'aos';
 import 'aos/dist/aos.css';
+import Modal from '../Modal';
 
 function HomePage() {
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
   useEffect(()=>{
     AOS.init()
   },[])
@@ -22,14 +25,15 @@ function HomePage() {
             sharing personal contact information. Nothing to download!
             </p>
             <div className="buttons-container">
-              <button type="text" className="btn">
-                + New Meeting
+              <button onClick={() => setIsModalOpen(true)} type="text"  className="btn" >
+                + New Group
               </button>
               <button type="text" className="btn btn2 btn3">
-              <Link to={"/chat"}>Join Meeting</Link>
+              <Link to={"/chat"}>Join Group</Link>
               </button>
             </div>
           </div>
+          <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
         </div>
         
       </div>
