@@ -8,6 +8,7 @@ import InstantChat from "./components/landing/InstantChat";
 import HomePage from "./components/landing/HomePage";
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import PrivateChat from "./components/PrivateChat";
 
 const socket = io.connect("http://localhost:5000");
 
@@ -22,7 +23,8 @@ function App() {
       <Routes>
         <Route path="/" element={<HomePage />} />
         <Route path="/chat" element={<ChatPage socket={socket}/>} />
-        <Route path="/InstantChat" element={<InstantChat/>}/>
+        {/* <Route path="/InstantChat" element={<InstantChat/>}/> */}
+        <Route path="/private-chat" element={<PrivateChat/>}/>
         <Route path="/Blog" element={<Blog />} />
       </Routes>
     </div>

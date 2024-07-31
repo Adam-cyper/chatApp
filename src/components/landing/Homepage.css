@@ -34,13 +34,13 @@
 }
 .wrap,
 .chat--details {
-  background: linear-gradient(#94ddfa, #9198e500);
+  background: linear-gradient(#94ddfa, #91b8e58a);
 }
 .btn2 {
   margin-left: 2rem;
 }
 .btn3 {
-  background-color: green;
+  background-color: rgb(21, 206, 120);
 }
 .banner {
   background-image: linear-gradient(

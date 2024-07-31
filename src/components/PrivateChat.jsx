@@ -6,8 +6,7 @@ import "react-toastify/dist/ReactToastify.css";
 import { useNavigate, useParams } from "react-router-dom";
 
 
-function ChatPage({socket}) {
-  const navigate = useNavigate();
+function PrivateChat({socket}) {
   const {user,id}= useParams()
   
   const [activeUsername, setActiveUsername] = useState("");
@@ -215,4 +214,4 @@ function ChatPage({socket}) {
   );
 }
 
-export default ChatPage;
+export default PrivateChat;

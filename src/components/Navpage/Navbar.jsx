@@ -17,7 +17,7 @@ const [Responsive, setResponsive]= useState(true)
               <Link to="/">Home</Link>
             </li>
             <li>
-              <Link to="/InstantChat">Instant-chat</Link>
+              <Link to="/private-chat">Private Chat</Link>
             </li>
             <li>
               <Link to="/Blog">How it Work</Link>
