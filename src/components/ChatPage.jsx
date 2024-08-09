@@ -94,7 +94,7 @@ function ChatPage({ socket }) {
   if (!showChat) {
     return (
       <section className="chat--details pt-32 h-screen">
-        <div className=" p-5 border-2 border-slate-300 w-2/6  mx-auto rounded-md">
+        <div className=" p-5 border-2 border-white w-2/6  mx-auto rounded-md">
           <h4 className="font-bold text-xl mb-5">Join Meeting</h4>
           <form onSubmit={handleSubmit}>
             <div className="mb-4">

@@ -5,14 +5,13 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useNavigate, useParams } from "react-router-dom";
 
+function PrivateChat({ socket }) {
+  const { user, id } = useParams();
 
-function PrivateChat({socket}) {
-  const {user,id}= useParams()
-  
   const [activeUsername, setActiveUsername] = useState("");
   const [activeUserPhoto, setActiveUserPhoto] = useState("");
   const [input, setInput] = useState("");
-  const [users, setUsers] = useState([]);
+  // const [users, setUsers] = useState([]);
   const [userId, setUserId] = useState("");
   const [messages, setMessages] = useState([]);
   const [loginUser, setLoginUser] = useState("");
@@ -21,6 +20,51 @@ function PrivateChat({socket}) {
 
   const messageRef = useRef(null);
 
+  const [users, setUsers] = useState([]);
+  const [currentChatUser, setCurrentChatUser] = useState(null);
+
+  useEffect(() => {
+    // Listen for updates to the user list
+    socket.on("user-list", (userList) => {
+      setUsers(userList);
+    });
+
+    // Listen for a private chat request
+    socket.on("private-chat-request", ({ fromUserId }) => {
+      const accept = window.confirm(
+        `${fromUserId} wants to chat with you. Accept?`
+      );
+      if (accept) {
+        socket.emit("accept-private-chat", { toUserId: socket.id, fromUserId });
+        setCurrentChatUser(fromUserId);
+      }
+    });
+
+    // Listen for confirmation that a private chat has been accepted
+    socket.on("private-chat-accepted", ({ fromUserId, toUserId }) => {
+      setCurrentChatUser(fromUserId === socket.id ? toUserId : fromUserId);
+      alert("Private chat started!");
+    });
+
+     // Listen for private messages
+     socket.on('receive-private-message', ({ fromUserId, message }) => {
+      setMessages((prevMessages) => [...prevMessages, { from: fromUserId, text: message }]);
+  });
+
+    return () => {
+      socket.off("user-list");
+      socket.off("private-chat-request");
+      socket.off("private-chat-accepted");
+      socket.off('receive-private-message');
+    };
+  }, [socket]);
+
+  const requestPrivateChat = (userId) => {
+    socket.emit("request-private-chat", {
+      toUserId: userId,
+      fromUserId: socket.id,
+    });
+  };
 
   // useEffect(() => {
   //   socket.on("messageResponse", (data) => {
@@ -47,31 +91,38 @@ function PrivateChat({socket}) {
     scrollToBottom();
   }, [messages]);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    if (userId === "") {
-    } else if (userId !== "" && input.trim() === "") {
-    } else {
-      // sendMessage(input);
-      // socket.emit("message", {
-      //   message: input,
-      //   name: activeUsername,
-      //   socketID: socket.id,
-      //   createdAt: new Date(Date.now()),
-      // });
-      // setInput("");
-    }
+    if (input.trim() && currentChatUser) {
+      const messageData = {
+        // room: groupId,
+        author: socket.id,
+        message: input,
+        time:
+          new Date(Date.now()).getHours() +
+          ":" +
+          new Date(Date.now()).getMinutes(),
+      };
+
+      await socket.emit('private-message', {
+          toUserId: currentChatUser,
+          fromUserId: socket.id,
+          message: messageData,
+      });
+      setMessages((prevMessages) => [...prevMessages, messageData]);
+      setInput('');
+  }
   };
 
-  useEffect(() => {
-    axios
-      .get("/api/users/me")
-      .then((user) => {
-        setLoginUser(user.data.user);
-        // console.log(user)
-      })
-      .catch((err) => console.log(err));
-  }, []);
+  // useEffect(() => {
+  //   axios
+  //     .get("/api/users/me")
+  //     .then((user) => {
+  //       setLoginUser(user.data.user);
+  //       // console.log(user)
+  //     })
+  //     .catch((err) => console.log(err));
+  // }, []);
 
   return (
     <div className="flex h-screen">
@@ -98,36 +149,32 @@ function PrivateChat({socket}) {
             }}
           />
         </form>
-        <div className="users--container">
-          {filteredUsers.length > 0 ? (
-            filteredUsers.map((user) => (
-              <div
-                key={user._id}
-                className="bg-slate-300 mx-5 my-4 p-3 rounded-md flex gap-3 items-center cursor-pointer hover:bg-slate-400 transition-all duration-300"
-                onClick={() => {
-                  setUserId(user._id);
-                  setActiveUsername(user.username);
-                  setActiveUserPhoto(user.photo);
-                }}
-              >
-                <img
-                  className="rounded-full"
-                  style={{ height: "60px" }}
-                  width={60}
-                  src={`${user.photo}`}
-                  alt={`${user.username}`}
-                />
-                <div>
-                  <h4 className="font-bold capitalize">{user?.username}</h4>
-                  <p>Open your message</p>
-                </div>
-              </div>
-            ))
-          ) : (
-            <p className="px-5 bg-slate-100 mx-5 py-5 text-center rounded-md">
-              No User Found
-            </p>
-          )}
+        <div className="users--container ml-2 mt-5">
+          <ul className="px-5">
+            {users.length > 0 ? (
+              users.map(
+                (user) =>
+                  user !== socket.id && (
+                    <li
+                      key={user}
+                      className="flex items-center justify-between gap-10 mt-5"
+                    >
+                      {user}
+                      <button
+                        className="bg-teal-500 py-1 px-5 text-white rounded-md"
+                        onClick={() => requestPrivateChat(user)}
+                      >
+                        Chat
+                      </button>
+                    </li>
+                  )
+              )
+            ) : (
+              <p className="px-5 bg-slate-100 mx-5 py-5 text-center rounded-md">
+                No User Found
+              </p>
+            )}
+          </ul>
         </div>
       </div>
       <div className="flex flex-col bg-blue-300 w-full p-2">
@@ -143,51 +190,48 @@ function PrivateChat({socket}) {
             src="/images/wallpaperflare.com_wallpaper (6).jpg"
             alt="user"
           />
-          <h4 className="font-bold text-xl capitalize">
-            {user}
+          <h4 className="font-semibold text-md text-center ">
+            {currentChatUser && <div>Chatting with {currentChatUser}</div>}
+            {/* {user} */}
           </h4>
         </div>
         <div className="flex flex-grow flex-col h-0">
           {
-            <div className="my--container">
-              {messages.length > 0 ? (
-                messages.map((message, index) =>
-                  message?.myself ? (
-                    <div key={index} className="main myself--message">
-                      <div className="message--box  rounded-lg text-white bg-blue-400 mx-2 px-4 py-5 my-3 ">
-                        <div>
-                          <p>{message.message}</p>
-                          <small className="float-right mt-2 font-bold">
-                            {new Date(message.createdAt).getHours() +
-                              ":" +
-                              new Date(message.createdAt).getMinutes()}
-                          </small>
-                        </div>
-                      </div>
-                    </div>
-                  ) : (
-                    <div
-                      key={index}
-                      className="message--box rounded-lg bg-blue-100 mx-2 px-4 py-5 my-5"
-                    >
-                      <div>
-                        <p>{message.message}</p>
-                        <small className="float-right mt-2 font-bold">
-                          {new Date(message.createdAt).getHours() +
-                            ":" +
-                            new Date(message.createdAt).getMinutes()}
-                        </small>
-                      </div>
-                    </div>
-                  )
-                )
-              ) : (
-                <p className="capitalize text-center bg-blue-50 px-5 py-5 font-semibold mx-5 rounded-lg">
-                  no message here. start chatting now
-                </p>
-              )}
-              <div ref={messageRef} />
-            </div>
+     <div className="my--container">
+     {messages.length > 0 ? (
+       messages.map((message, index) =>
+         message?.author === socket.id ? (
+           <div key={index} className="main myself--message">
+             <div className="message--box  rounded-lg text-white bg-blue-400 mx-2 px-4 py-5 my-3 ">
+               <div>
+                 <p>{message.message}</p>
+                 <small className="float-right mt-2 font-bold">
+                   {message.time} You
+                 </small>
+               </div>
+             </div>
+           </div>
+         ) : (
+           <div
+             key={index}
+             className="message--box rounded-lg bg-blue-100 mx-2 px-4 py-5 my-5"
+           >
+             <div>
+               <p>{message.message}</p>
+               <small className="float-right mt-2 font-bold capitalize">
+                 {message.time} {message.author}
+               </small>
+             </div>
+           </div>
+         )
+       )
+     ) : (
+       <p className="capitalize text-center bg-blue-50 px-5 py-5 font-semibold mx-5 rounded-lg">
+         no message here. start chatting now
+       </p>
+     )}
+     <div ref={messageRef} />
+   </div>
           }
         </div>
         {/* chat footer here */}

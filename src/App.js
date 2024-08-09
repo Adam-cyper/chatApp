@@ -24,7 +24,7 @@ function App() {
         <Route path="/" element={<HomePage />} />
         <Route path="/chat" element={<ChatPage socket={socket}/>} />
         {/* <Route path="/InstantChat" element={<InstantChat/>}/> */}
-        <Route path="/private-chat" element={<PrivateChat/>}/>
+        <Route path="/private-chat" element={<PrivateChat socket={socket}/>}/>
         <Route path="/Blog" element={<Blog />} />
       </Routes>
     </div>
