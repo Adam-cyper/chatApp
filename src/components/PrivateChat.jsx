@@ -8,8 +8,6 @@ import { useNavigate, useParams } from "react-router-dom";
 function PrivateChat({ socket }) {
   const { user, id } = useParams();
 
-  const [activeUsername, setActiveUsername] = useState("");
-  const [activeUserPhoto, setActiveUserPhoto] = useState("");
   const [input, setInput] = useState("");
   // const [users, setUsers] = useState([]);
   const [userId, setUserId] = useState("");
@@ -19,7 +17,7 @@ function PrivateChat({ socket }) {
   const [filteredUsers, setFilteredUsers] = useState([]);
 
   const messageRef = useRef(null);
-
+  const [roomId, setRoomId] = useState('');
   const [users, setUsers] = useState([]);
   const [currentChatUser, setCurrentChatUser] = useState(null);
 
@@ -36,19 +34,23 @@ function PrivateChat({ socket }) {
       );
       if (accept) {
         socket.emit("accept-private-chat", { toUserId: socket.id, fromUserId });
-        setCurrentChatUser(fromUserId);
+        // setCurrentChatUser(fromUserId);
       }
     });
 
-    // Listen for confirmation that a private chat has been accepted
-    socket.on("private-chat-accepted", ({ fromUserId, toUserId }) => {
-      setCurrentChatUser(fromUserId === socket.id ? toUserId : fromUserId);
-      alert("Private chat started!");
-    });
+     // Listen for confirmation that a private chat has been accepted
+     socket.on('private-chat-accepted', ({ chatUser, roomId }) => {
+      setCurrentChatUser(chatUser);
+      setRoomId(roomId);
+      setMessages([]);
+      alert(`Private chat started with ${chatUser}`);
+  });
 
-     // Listen for private messages
-     socket.on('receive-private-message', ({ fromUserId, message }) => {
-      setMessages((prevMessages) => [...prevMessages, { from: fromUserId, text: message }]);
+    // Listen for private messages
+    socket.on('receive-private-message', ({ fromUserId, message }) => {
+      if(fromUserId && message){
+        setMessages((prevMessages) => [...prevMessages, message]);
+      }
   });
 
     return () => {
@@ -57,7 +59,7 @@ function PrivateChat({ socket }) {
       socket.off("private-chat-accepted");
       socket.off('receive-private-message');
     };
-  }, [socket]);
+  }, []);
 
   const requestPrivateChat = (userId) => {
     socket.emit("request-private-chat", {
@@ -93,9 +95,8 @@ function PrivateChat({ socket }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (input.trim() && currentChatUser) {
+    if (input.trim() && roomId) {
       const messageData = {
-        // room: groupId,
         author: socket.id,
         message: input,
         time:
@@ -105,8 +106,8 @@ function PrivateChat({ socket }) {
       };
 
       await socket.emit('private-message', {
-          toUserId: currentChatUser,
-          fromUserId: socket.id,
+        roomId,
+        fromUserId: socket.id,
           message: messageData,
       });
       setMessages((prevMessages) => [...prevMessages, messageData]);
