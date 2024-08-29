@@ -47,10 +47,10 @@ function PrivateChat({ socket }) {
   });
 
     // Listen for private messages
-    socket.on('receive-private-message', ({ fromUserId, message }) => {
-      if(fromUserId && message){
+    socket.on('receive-private-message', (  message ) => {
+      // if(fromUserId && message){
         setMessages((prevMessages) => [...prevMessages, message]);
-      }
+      // }
   });
 
     return () => {
@@ -59,7 +59,9 @@ function PrivateChat({ socket }) {
       socket.off("private-chat-accepted");
       socket.off('receive-private-message');
     };
-  }, []);
+  }, [socket]);
+
+
 
   const requestPrivateChat = (userId) => {
     socket.emit("request-private-chat", {
@@ -107,7 +109,7 @@ function PrivateChat({ socket }) {
 
       await socket.emit('private-message', {
         roomId,
-        fromUserId: socket.id,
+        // fromUserId: socket.id,
           message: messageData,
       });
       setMessages((prevMessages) => [...prevMessages, messageData]);
