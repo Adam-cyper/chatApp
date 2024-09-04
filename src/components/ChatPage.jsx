@@ -12,6 +12,7 @@ function ChatPage({ socket }) {
   const [groupId, setGroupId] = useState("");
   const [allUsers, setAllUsers] = useState([]);
 
+
   const messageRef = useRef(null);
 
   const handleSubmit = (e) => {
