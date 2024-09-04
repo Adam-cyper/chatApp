@@ -33,8 +33,7 @@ function PrivateChat({ socket }) {
         `${fromUserId} wants to chat with you. Accept?`
       );
       if (accept) {
-        socket.emit("accept-private-chat", { toUserId: socket.id, fromUserId });
-        // setCurrentChatUser(fromUserId);
+        socket.emit('accept-private-chat', { toUserId: socket.id, fromUserId });
       }
     });
 
@@ -47,9 +46,9 @@ function PrivateChat({ socket }) {
   });
 
     // Listen for private messages
-    socket.on('receive-private-message', (  message ) => {
+    socket.on('receive-private-message', (  {fromUserId,message} ) => {
       // if(fromUserId && message){
-        setMessages((prevMessages) => [...prevMessages, message]);
+        setMessages((prevMessages) => [...prevMessages, {from:fromUserId,...message}]);
       // }
   });
 
@@ -107,13 +106,14 @@ function PrivateChat({ socket }) {
           new Date(Date.now()).getMinutes(),
       };
 
-      await socket.emit('private-message', {
+       socket.emit('private-message', {
         roomId,
-        // fromUserId: socket.id,
+        fromUserId: socket.id,
           message: messageData,
       });
       setMessages((prevMessages) => [...prevMessages, messageData]);
       setInput('');
+      // console.log(messages)
   }
   };
 
