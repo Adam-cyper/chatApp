@@ -24,7 +24,6 @@
   background-color: rgb(50, 180, 255);
   border: none;
   border-radius: 10px;
-
   color: white;
   font-size: 20px;
   box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.322);
@@ -83,5 +82,21 @@
   }
   .container{
     padding: 0 2rem;
+  }
+  .wrap{
+    width: 100%;
+  }
+}
+
+@media only screen and (max-width:390px){
+  .detail{
+    width: 100%;
+  }
+  .detail h1{
+    font-size: 34px;
+  }
+
+  .container{
+    height: 90vh;
   }
 }

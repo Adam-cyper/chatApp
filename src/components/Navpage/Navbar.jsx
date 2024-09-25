@@ -5,7 +5,7 @@ import { FiMenu } from "react-icons/fi";
 
 const Navbar = () => {
 
-const [Responsive, setResponsive]= useState(true)
+const [Responsive, setResponsive] = useState(true)
    
   return (
     <>

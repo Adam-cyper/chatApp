@@ -144,7 +144,7 @@ function PrivateChat({ socket }) {
     <React.Fragment>
       {!showChat ? (
         <section className="chat--details pt-32 h-screen">
-          <div className=" p-5 border-2 border-white w-2/6  mx-auto rounded-md">
+          <div className=" p-5 border-2 border-white w-2/6 max-md:w-5/6 mx-auto rounded-md">
             <h4 className="font-bold text-xl mb-5">Start Private Chat</h4>
             <form>
               <div className="mb-4">
