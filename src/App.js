@@ -10,11 +10,11 @@ import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import PrivateChat from "./components/PrivateChat";
 
-const socket = io.connect("http://localhost:5000");
+const socket = io.connect("https://p2pbackend-1ele.onrender.com");
 
 
 function App() {
-  axios.defaults.baseURL = "http://localhost:5000";
+  axios.defaults.baseURL = "https://p2pbackend-1ele.onrender.com";
   axios.defaults.withCredentials = true;
 
   return (
