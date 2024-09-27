@@ -16,7 +16,7 @@ function Blog() {
           <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Nulla praesentium quisquam minima, eveniet obcaecati corporis laboriosam ad omnis fuga deserunt.</p>
         </div>
         <div className="container">
-          <img src="./images/power_prospects.PNG" alt="images"  data-aos="zoom-in-left"/>
+          <img src="/images/power_prospects.png" alt="images"  data-aos="zoom-in-left"/>
           <div className="detail" data-aos="flip-left">
            
             <h1>Nothing to Download</h1>

@@ -11,7 +11,7 @@ function InstantChat() {
       <div className="wrap">
         <Navbar />
         <div className="container">
-          <img src="./images/com_asset.PNG" alt="images" />
+          <img src="/images/com_asset.png" alt="images" />
           <div className="detail">
             <h1>INSTANT MESSAGING</h1>
             <h1>SEAMLESS DELIVERY</h1>

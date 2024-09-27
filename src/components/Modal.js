@@ -1,33 +1,41 @@
-import React, { useState } from 'react';
-import axios from 'axios'
-import { toast } from 'react-toastify';
+import React, { useState } from "react";
+import axios from "axios";
+import { toast } from "react-toastify";
 
-const Modal = ({ isOpen, onClose,socket }) => {
-
-  const [groupId, setGroupId] = useState('');
+const Modal = ({ isOpen, onClose, socket }) => {
+  const [groupId, setGroupId] = useState("");
 
   const createRoom = async (e) => {
-    e.preventDefault()
-    if(!groupId){
-      return alert('please enter a group id')
+    e.preventDefault();
+    if (!groupId) {
+      return alert("please enter a group id");
     }
-        try {
-            const response = await axios.post('http://localhost:5000/create-room', { groupId });
-            toast.success(`Group created with ID: ${response.data.groupId}`)
-        } catch (error) {
-          toast.error(error.response.data.error)
-        }finally{
-          onClose()
-          setGroupId("")
-        }
-};
+    try {
+      const response = await axios.post(
+        "https://p2pbackend-1ele.onrender.com/create-room",
+        { groupId }
+      );
+      toast.success(`Group created with ID: ${response.data.groupId}`);
+    } catch (error) {
+      if (error && error.data) {
+        toast.error(error.data);
+      } else {
+        toast.error(error.response.data.error);
+      }
+    } finally {
+      onClose();
+      setGroupId("");
+    }
+  };
 
   if (!isOpen) return null;
 
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
       <div className="bg-white rounded-lg p-6 w-96">
-        <h2 className="text-2xl font-semibold text-blue-600 mb-4">New Meeting</h2>
+        <h2 className="text-2xl font-semibold text-blue-600 mb-4">
+          New Meeting
+        </h2>
         <form onSubmit={createRoom}>
           {/* <div className="mb-4">
             <label htmlFor="username" className="block text-sm font-medium text-gray-700">Username</label>
@@ -41,7 +49,12 @@ const Modal = ({ isOpen, onClose,socket }) => {
             />
           </div> */}
           <div className="mb-4">
-            <label htmlFor="groupId" className="block text-sm font-medium text-gray-700">Group ID</label>
+            <label
+              htmlFor="groupId"
+              className="block text-sm font-medium text-gray-700"
+            >
+              Group ID
+            </label>
             <input
               type="text"
               id="groupId"

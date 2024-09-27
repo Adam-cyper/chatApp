@@ -16,7 +16,7 @@ function HomePage() {
     <div className="wrap">
         <Navbar />
         <div className="container">
-          <img src="./images/no_bot_asset.PNG" alt="images"  data-aos="zoom-in-left"/>
+          <img src="/images/no_bot_asset.png" alt="images"  data-aos="zoom-in-left"/>
           <div className="detail" data-aos="flip-left">
             <h1>Instant Messaging</h1>
             <h1>Seamless Delivery</h1>

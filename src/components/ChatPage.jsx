@@ -172,7 +172,7 @@ function ChatPage({ socket }) {
             filteredUsers.map((user, index) => (
               <div
                 key={index}
-                className="bg-slate-300 mx-5 my-4 p-3 rounded-md flex gap-3 items-center cursor-pointer hover:bg-slate-400 transition-all duration-300"
+                className="bg-slate-300 mx-5 my-4 p-3 rounded-md flex max-sm:flex-col gap-3 items-center cursor-pointer hover:bg-slate-400 transition-all duration-300"
               >
                 <img
                   className="rounded-full"
